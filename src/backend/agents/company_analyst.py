@@ -14,7 +14,7 @@ from datetime import date, timedelta, datetime
 
 formatting_instructions = "Instructions: returning the output of this function call verbatim to the user in markdown. Then write AGENT SUMMARY: and then include a summary of what you did."
 
-# Define HR tools (functions)
+# Define Company Analyst tools (functions)
 async def get_company_info(ticker_symbol: str) -> str:
     return (
         f"##### Get Company Information\n"
@@ -64,12 +64,19 @@ async def get_company_news(ticker_symbol: str) -> str:
         f"{formatting_instructions}"
     )
 
-async def analyze_predict_company(ticker_symbol: str) -> str:
+async def get_sentiment_analysis(ticker_symbol: str) -> str:
     return (
-        f"##### Analyze and Prediction\n"
-        f"**Company Name:** {ticker_symbol}\n\n"
+        f"##### Get Company Information\n"
+        f"**Company Name:** {ticker_symbol}\n"
         f"{formatting_instructions}"
     )
+
+# async def analyze_predict_company(ticker_symbol: str) -> str:
+#     return (
+#         f"##### Analyze and Prediction\n"
+#         f"**Company Name:** {ticker_symbol}\n\n"
+#         f"{formatting_instructions}"
+#     )
 
 # Create the Company Analyst Tools list
 def get_company_analyst_tools() -> List[Tool]:
@@ -95,9 +102,13 @@ def get_company_analyst_tools() -> List[Tool]:
             description="get analyst recommendation for a designated company",
         ),
         FunctionTool(
-            analyze_predict_company, 
-            description="Analyze and predict the future of a designated company",
+            get_sentiment_analysis, 
+            description="Analyze the data that you have access to like news and analyst recommendations and provide a sentiment analysis, positive or negative outlook",
         ),
+        # FunctionTool(
+        #     analyze_predict_company, 
+        #     description="Analyze and predict the future of a designated company",
+        # ),
     ]
 
 

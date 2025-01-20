@@ -18,6 +18,7 @@ from agents.generic import GenericAgent, get_generic_tools
 from agents.company_analyst import CompanyAnalystAgent, get_company_analyst_tools
 from agents.earningcalls_analyst import EarningCallsAnalystAgent, get_earning_calls_analyst_tools
 from agents.sec_analyst import SecAnalystAgent, get_sec_analyst_tools
+from agents.forecaster import ForecasterAgent, get_forecaster_tools
 
 # from agents.misc import MiscAgent
 from config import Config
@@ -49,6 +50,7 @@ generic_tools = get_generic_tools()
 company_analyst_tools = get_company_analyst_tools()
 earning_calls_analyst_tools = get_earning_calls_analyst_tools()
 sec_analyst_tools = get_sec_analyst_tools()
+forecaster_tools = get_forecaster_tools()
 
 # Initialize the Azure OpenAI model client
 aoai_model_client = Config.GetAzureOpenAIChatCompletionClient(
@@ -96,6 +98,8 @@ async def initialize_runtime_and_context(
     earning_calls_analyst_tool_agent_id = AgentId("earning_calls_analyst_tool_agent", session_id)
     sec_analyst_agent_id = AgentId("sec_analyst_agent", session_id)
     sec_analyst_tool_agent_id = AgentId("sec_analyst_tool_agent", session_id)
+    forecaster_agent_id = AgentId("forecaster_agent", session_id)
+    forecaster_tool_agent_id = AgentId("forecaster_tool_agent", session_id)
     group_chat_manager_id = AgentId("group_chat_manager", session_id)  
 
     # Initialize the context for the session
@@ -127,6 +131,11 @@ async def initialize_runtime_and_context(
     )
     await ToolAgent.register(
         runtime,
+        "forecaster_tool_agent",
+        lambda: ToolAgent("Forecaster tool execution agent", forecaster_tools),
+    )
+    await ToolAgent.register(
+        runtime,
         "misc_tool_agent",
         lambda: ToolAgent("Misc tool execution agent", []),
     )
@@ -147,6 +156,7 @@ async def initialize_runtime_and_context(
                     company_analyst_agent_id,
                     earning_calls_analyst_agent_id,
                     sec_analyst_agent_id,
+                    forecaster_agent_id,  
                 ]
             ],
             retrieve_all_agent_tools(),
@@ -200,6 +210,18 @@ async def initialize_runtime_and_context(
             earning_calls_analyst_tool_agent_id,
         ),
     )
+    await ForecasterAgent.register(
+        runtime,
+        forecaster_agent_id.type,
+        lambda: ForecasterAgent(
+            aoai_model_client,
+            session_id,
+            user_id,
+            cosmos_memory,
+            forecaster_tools,
+            forecaster_tool_agent_id,
+        ),
+    )
     await HumanAgent.register(
         runtime,
         human_agent_id.type,
@@ -213,6 +235,7 @@ async def initialize_runtime_and_context(
         BAgentType.company_analyst_agent: company_analyst_agent_id,
         BAgentType.earning_calls_analyst_agent: earning_calls_analyst_agent_id,
         BAgentType.sec_analyst_agent: sec_analyst_agent_id,
+        BAgentType.forecaster_agent: forecaster_agent_id,
     }
     await GroupChatManager.register(
         runtime,
@@ -235,6 +258,7 @@ def retrieve_all_agent_tools() -> List[Dict[str, Any]]:
     company_analyst_tools: List[Tool] = get_company_analyst_tools()
     earning_calls_analyst_tools: List[Tool] = get_earning_calls_analyst_tools()
     sec_analyst_tools: List[Tool] = get_sec_analyst_tools()
+    forecaster_tools: List[Tool] = get_forecaster_tools()
 
     functions = []
 
@@ -264,6 +288,16 @@ def retrieve_all_agent_tools() -> List[Dict[str, Any]]:
         functions.append(
             {
                 "agent": "SecAnalystAgent",
+                "function": tool.name,
+                "description": tool.description,
+                "arguments": str(tool.schema["parameters"]["properties"]),
+            }
+        )
+    # Add ForecasterAgent functions
+    for tool in forecaster_tools:
+        functions.append(
+            {
+                "agent": "ForecasterAgent",
                 "function": tool.name,
                 "description": tool.description,
                 "arguments": str(tool.schema["parameters"]["properties"]),
