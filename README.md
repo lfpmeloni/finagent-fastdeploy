@@ -38,6 +38,46 @@ This application is an AI-driven orchestration system that manages a group of AI
 
 This system is intended for developing and deploying custom AI solutions for specific customers. This code has not been tested as an end-to-end, reliable production application- it is a foundation to help accelerate building out multi-agent systems. You are encouraged to add your own data and functions to the agents, and then you must apply your own performance and safety evaluation testing frameworks to this system before deploying it.
 
+### Technical Capabilities
+
+The solution is a multi-agent architecture designed to perform comprehensive financial data analysis and reporting. The system includes the following specialized agents, each leveraging GPT-4o and the Autogen framework for advanced natural language processing and contextual understanding:
+
+1. Company Agent
+    - Retrieve comprehensive company profile information.
+    - Access and analyze historical and real-time stock data.
+    - Extract and evaluate the latest financial metrics.
+    - Aggregate and summarize the latest company-related news.
+    - Provide detailed analyst recommendations for investment decisions.
+2. Earnings Calls Agent
+    - Retrieve and process earnings call transcripts.
+    - Generate executive summaries of transcripts.
+    - Identify and categorize key insights:
+      - Positive Outlook: Management's optimistic commentary and projections.
+      - Negative Outlook: Concerns or risks highlighted in discussions.
+      - Future Growth Opportunities: Strategies and market opportunities discussed during calls.
+3. SEC Agent
+    - Analyze SEC annual reports and filings.
+    - Extract key company and business highlights.
+    - Perform detailed risk assessment based on disclosures.
+    - Analyze financial statements, including:
+        - Cash Flow Statements
+        - Income Statements
+    - Generate comprehensive equity research reports summarizing findings.
+4. Integration and Technical Features
+    - Framework: The agents are built on the Autogen framework, enabling dynamic task orchestration and collaboration among agents.
+    - Foundation Model: All agents utilize GPT-4o, ensuring advanced contextual reasoning and data synthesis.
+    - Data Sources: The system seamlessly integrates data from:
+      - Yahoo Finance for real-time market data and analytics.
+      - SEC API for regulatory filings and compliance data.
+      - Private Financial Data Providers for exclusive market insights.
+
+### Applications
+This solution is a robust, scalable platform for delivering high-value financial intelligence, leveraging cutting-edge AI capabilities to enhance productivity and decision-making in financial analysis.
+
+- Investment Research: Comprehensive equity analysis and decision support for institutional and retail investors.
+- Corporate Strategy: Data-driven insights for management planning and market positioning.
+- Risk Assessment: Automated analysis of financial risks and opportunities, tailored to specific companies or industries.
+
 Home Page
 \
 ![image](./documentation/images/readme/macae-home.png)
@@ -46,9 +86,12 @@ Task Plan and execution
 \
 ![image](./documentation/images/readme/macae-application.png)
 
+Generated Research Report
+\
+![image](./documentation/images/readme/macae-report.png)
 
 
-### Products used/licenses required
+### Products used
 
 -   Azure Container Application
 -   Azure OpenAI
