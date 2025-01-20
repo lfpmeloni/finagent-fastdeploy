@@ -4,7 +4,8 @@ import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
 import random
-from dutils import decorate_all_methods, get_next_weekday
+from dutils import decorate_all_methods
+from helpers import get_next_weekday
 
 
 # from finrobot.utils import decorate_all_methods, get_next_weekday

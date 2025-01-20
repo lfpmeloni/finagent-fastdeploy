@@ -17,6 +17,7 @@ from agents.planner import PlannerAgent
 from agents.generic import GenericAgent, get_generic_tools
 from agents.company_analyst import CompanyAnalystAgent, get_company_analyst_tools
 from agents.earningcalls_analyst import EarningCallsAnalystAgent, get_earning_calls_analyst_tools
+from agents.sec_analyst import SecAnalystAgent, get_sec_analyst_tools
 
 # from agents.misc import MiscAgent
 from config import Config
@@ -47,6 +48,7 @@ runtime_dict: Dict[
 generic_tools = get_generic_tools()
 company_analyst_tools = get_company_analyst_tools()
 earning_calls_analyst_tools = get_earning_calls_analyst_tools()
+sec_analyst_tools = get_sec_analyst_tools()
 
 # Initialize the Azure OpenAI model client
 aoai_model_client = Config.GetAzureOpenAIChatCompletionClient(
@@ -92,6 +94,8 @@ async def initialize_runtime_and_context(
     company_analyst_tool_agent_id = AgentId("company_analyst_tool_agent", session_id)
     earning_calls_analyst_agent_id = AgentId("earning_calls_analyst_agent", session_id)
     earning_calls_analyst_tool_agent_id = AgentId("earning_calls_analyst_tool_agent", session_id)
+    sec_analyst_agent_id = AgentId("sec_analyst_agent", session_id)
+    sec_analyst_tool_agent_id = AgentId("sec_analyst_tool_agent", session_id)
     group_chat_manager_id = AgentId("group_chat_manager", session_id)  
 
     # Initialize the context for the session
@@ -118,6 +122,11 @@ async def initialize_runtime_and_context(
     )
     await ToolAgent.register(
         runtime,
+        "sec_analyst_tool_agent",
+        lambda: ToolAgent("Sec analyst tool execution agent", sec_analyst_tools),
+    )
+    await ToolAgent.register(
+        runtime,
         "misc_tool_agent",
         lambda: ToolAgent("Misc tool execution agent", []),
     )
@@ -136,7 +145,8 @@ async def initialize_runtime_and_context(
                 for agent in [
                     generic_agent_id,
                     company_analyst_agent_id,
-                    earning_calls_analyst_agent_id
+                    earning_calls_analyst_agent_id,
+                    sec_analyst_agent_id,
                 ]
             ],
             retrieve_all_agent_tools(),
@@ -166,6 +176,18 @@ async def initialize_runtime_and_context(
             company_analyst_tool_agent_id,
         ),
     )
+    await SecAnalystAgent.register(
+        runtime,
+        sec_analyst_agent_id.type,
+        lambda: SecAnalystAgent(
+            aoai_model_client,
+            session_id,
+            user_id,
+            cosmos_memory,
+            sec_analyst_tools,
+            sec_analyst_tool_agent_id,
+        ),
+    )
     await EarningCallsAnalystAgent.register(
         runtime,
         earning_calls_analyst_agent_id.type,
@@ -190,6 +212,7 @@ async def initialize_runtime_and_context(
         BAgentType.generic_agent: generic_agent_id,
         BAgentType.company_analyst_agent: company_analyst_agent_id,
         BAgentType.earning_calls_analyst_agent: earning_calls_analyst_agent_id,
+        BAgentType.sec_analyst_agent: sec_analyst_agent_id,
     }
     await GroupChatManager.register(
         runtime,
@@ -211,6 +234,7 @@ async def initialize_runtime_and_context(
 def retrieve_all_agent_tools() -> List[Dict[str, Any]]:
     company_analyst_tools: List[Tool] = get_company_analyst_tools()
     earning_calls_analyst_tools: List[Tool] = get_earning_calls_analyst_tools()
+    sec_analyst_tools: List[Tool] = get_sec_analyst_tools()
 
     functions = []
 
@@ -230,6 +254,16 @@ def retrieve_all_agent_tools() -> List[Dict[str, Any]]:
         functions.append(
             {
                 "agent": "EarningCallsAnalystAgent",
+                "function": tool.name,
+                "description": tool.description,
+                "arguments": str(tool.schema["parameters"]["properties"]),
+            }
+        )
+    # Add SecAnalystAgent functions
+    for tool in sec_analyst_tools:
+        functions.append(
+            {
+                "agent": "SecAnalystAgent",
                 "function": tool.name,
                 "description": tool.description,
                 "arguments": str(tool.schema["parameters"]["properties"]),
