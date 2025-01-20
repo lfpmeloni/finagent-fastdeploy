@@ -205,7 +205,9 @@ class ReportChartUtils:
         plt.tight_layout()
         # plt.show()
         plot_path = (
-            f"{save_path}/pe_performance.png" if os.path.isdir(save_path) else save_path
+            f"{save_path}/pe_performance.png"
+            if os.path.isdir(save_path)
+            else save_path
         )
         plt.savefig(plot_path)
         plt.close()

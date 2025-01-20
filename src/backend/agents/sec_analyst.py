@@ -14,12 +14,15 @@ from datetime import date, timedelta, datetime
 from helpers import summarize, summarizeTopic
 from analyzer import *
 from reports import ReportLabUtils
+from charting import ReportChartUtils
 
 formatting_instructions = "Instructions: returning the output of this function call verbatim to the user in markdown. Then write AGENT SUMMARY: and then include a summary of what you did."
 businessOverview = None
 riskAssessment = None
 marketPosition = None
 incomeStatement = None
+incomeSummarization = None
+segmentStatement = None
 
 async def analyze_company_description(ticker_symbol:str, year:str) -> str:
     global marketPosition
@@ -65,12 +68,13 @@ async def get_risk_assessment(ticker_symbol:str, year:str) -> str:
     )
 
 async def analyze_segment_stmt(ticker_symbol:str, year:str) -> str:
+    global segmentStatement
     segmentStmt = ReportAnalysisUtils.analyze_segment_stmt(ticker_symbol, year)
-    summarized = summarize(segmentStmt)
+    segmentStatement = summarize(segmentStmt)
     return (
         f"##### Segment Statement\n"
         f"**Company Name:** {ticker_symbol}\n"
-        f"**Segment Statement Analysis:** {summarized}\n"
+        f"**Segment Statement Analysis:** {segmentStatement}\n"
         f"{formatting_instructions}"
     )
 
@@ -105,11 +109,30 @@ async def analyze_income_stmt(ticker_symbol:str, year:str) -> str:
         f"{formatting_instructions}"
     )
 
+async def income_summarization(ticker_symbol:str, year:str) -> str:
+    global incomeSummarization
+    global incomeStatement
+    global segmentStatement
+    if incomeStatement is None or len(incomeStatement) == 0:
+        incomeStmt = ReportAnalysisUtils.analyze_income_stmt(ticker_symbol, year)
+        incomeStatement = summarize(incomeStmt)
+    if segmentStatement is None or len(segmentStatement) == 0:
+        segmentStmt = ReportAnalysisUtils.analyze_segment_stmt(ticker_symbol, year)
+        segmentStatement = summarize(segmentStmt)
+    incomeSummary = ReportAnalysisUtils.income_summarization(ticker_symbol, year, incomeStatement, segmentStatement)
+    incomeSummarization = summarize(incomeSummary)
+    return (
+        f"#####Income Statement\n"
+        f"**Company Name:** {ticker_symbol}\n"
+        f"**Income Statement Analysis:** {incomeSummarization}\n"
+        f"{formatting_instructions}"
+    )
+
 async def build_annual_report(ticker_symbol:str, year:str) -> str:
     global businessOverview
     global riskAssessment
     global marketPosition
-    global incomeStatement
+    global incomeSummarization
     if businessOverview is None or len(businessOverview) == 0:
         businessHighlights = ReportAnalysisUtils.analyze_business_highlights(ticker_symbol, year)
         businessOverview = summarize(businessHighlights)
@@ -122,16 +145,32 @@ async def build_annual_report(ticker_symbol:str, year:str) -> str:
         companyDesc = ReportAnalysisUtils.analyze_company_description(ticker_symbol, year)
         marketPosition = summarize(companyDesc)
 
-    if incomeStatement is None or len(incomeStatement) == 0:
-        incomeStmt = ReportAnalysisUtils.analyze_income_stmt(ticker_symbol, year)
-        incomeStatement = summarize(incomeStmt)
+    if incomeSummarization is None or len(incomeSummarization) == 0:
+        incomeSummary = await income_summarization(ticker_symbol, year)
+        incomeSummarization = summarize(incomeSummary)
     
-    ReportLabUtils.build_annual_report(ticker_symbol, "reports", incomeStatement,
-                            marketPosition, businessOverview, riskAssessment, None, None, None, "2024-12-27")
+    secReport = fmpUtils.get_sec_report(ticker_symbol, year)
+    if secReport.find("Date: ") > 0:
+        index = secReport.find("Date: ")
+        filingDate = secReport[index:].split()[1]
+    else:
+        filingDate = datetime.now()
+
+    #Convert filing date to datetime and then convert to a formatted string
+    if isinstance(filingDate, datetime):
+        filingDate = filingDate.strftime("%Y-%m-%d")
+    else:
+        filingDate = datetime.strptime(filingDate, "%Y-%m-%d").strftime("%Y-%m-%d")
+
+
+    ReportChartUtils.get_share_performance(ticker_symbol, filingDate, "reports\\")
+    ReportChartUtils.get_pe_eps_performance(ticker_symbol, filingDate, 4, "reports\\")
+    reportOut = ReportLabUtils.build_annual_report(ticker_symbol, "reports\\", incomeSummarization,
+                            marketPosition, businessOverview, riskAssessment, None, "reports\\stock_performance.png", "reports\\pe_performance.png", filingDate)
     return (
         f"#####Build Annual Report\n"
         f"**Company Name:** {ticker_symbol}\n"
-        f"**Report Saved at :** reports\n"
+        f"**Report Saved at :** reports\\{ticker_symbol}_Equity_Research_report.pdf\n"
         f"{formatting_instructions}"
     )
 

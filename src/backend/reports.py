@@ -74,6 +74,9 @@ class ReportLabUtils:
                 else save_path
             )
             os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
+            # Delete the file if it already exists
+            if os.path.exists(pdf_path):
+                os.remove(pdf_path)
             doc = SimpleDocTemplate(pdf_path, pagesize=pagesizes.A4)
         
             frame_left = Frame(
