@@ -59,7 +59,8 @@ async def get_company_news(ticker_symbol: str) -> str:
     return (
         f"##### Get Company News\n"
         f"**Company Name:** {ticker_symbol}\n\n"
-        f"**Company News:** {fmpUtils.get_company_news(ticker_symbol, start_date, end_date)}\n"
+        #f"**Company News:** {fmpUtils.get_company_news(ticker_symbol, start_date, end_date)}\n"
+        f"**Company News:** {yfUtils.get_company_news(ticker_symbol, start_date, end_date)}\n"
         f"{formatting_instructions}"
     )
 

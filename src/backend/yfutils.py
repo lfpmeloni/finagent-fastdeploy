@@ -4,6 +4,8 @@ from pandas import DataFrame
 from functools import wraps
 from dutils import decorate_all_methods
 from helpers import get_next_weekday, save_output, SavePathType
+import random
+from datetime import datetime
 
 def init_ticker(func: Callable) -> Callable:
     """Decorator to initialize yf.Ticker and pass it to the function."""
@@ -93,6 +95,43 @@ class yfUtils:
         cash_flow = ticker.cashflow
         return cash_flow
 
+    def get_company_news(
+        symbol: Annotated[str, "ticker symbol"],
+        start_date: Annotated[
+            str,
+            "start date of the search period for the company's basic financials, yyyy-mm-dd",
+        ],
+        end_date: Annotated[
+            str,
+            "end date of the search period for the company's basic financials, yyyy-mm-dd",
+        ],
+        max_news_num: Annotated[
+            int, "maximum number of news to return, default to 10"
+        ] = 25,
+    ) -> DataFrame:
+        """Get the url and filing date of the 10-K report for a given stock and year"""
+
+        ticker = symbol
+        tickerNews = ticker.news
+
+        if tickerNews:
+            news = [
+                    {
+                        #"date": datetime.fromtimestamp(n["providerPublishTime"]).strftime("%Y-%m-%d %H%M%S"),
+                        "date": n['content']["pubDate"],
+                        "headline": n['content']["title"],
+                        "summary": n['content']["summary"],
+                    }
+                    for n in tickerNews
+                ]
+            if len(news) > max_news_num:
+                news = random.choices(news, k=max_news_num)
+            news.sort(key=lambda x: x["date"])
+            output = DataFrame(news)
+            return output
+        else:
+            return f"Failed to retrieve data: {symbol}"
+         
     def get_analyst_recommendations(symbol: Annotated[str, "ticker symbol"]) -> tuple:
         """Fetches the latest analyst recommendations and returns the most common recommendation and its count."""
         ticker = symbol
