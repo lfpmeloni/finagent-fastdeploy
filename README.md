@@ -1,7 +1,5 @@
 # Multi-Agent: Financial Market Agent – Solution Accelerator
 
-MENU: [**USER STORY**](#user-story) \| [**QUICK DEPLOY**](#quick-deploy)  \| [**SUPPORTING DOCUMENTATION**](#supporting-documentation) \|
-
 ### Overview
 
 Problem:
