@@ -1,11 +1,6 @@
-# Multi-Agent: Custom Automation Engine – Solution Accelerator
+# Multi-Agent: Financial Market Agent – Solution Accelerator
 
 MENU: [**USER STORY**](#user-story) \| [**QUICK DEPLOY**](#quick-deploy)  \| [**SUPPORTING DOCUMENTATION**](#supporting-documentation) \|
-
-<h2><img src="./documentation/images/readme/userStory.png" width="64">
-<br/>
-User story
-</h2>
 
 ### Overview
 
@@ -13,7 +8,7 @@ Problem:
 Agentic AI systems are set to transform the way businesses operate, however it can be fairly complex to build an initial MVP to demonstrate this value. 
 
 Solution:
-The Multi-Agent -Custom Automation Engine Solution Accelerator provides a ready to go application to use as the base of the MVP, or as a reference, allowing you to hit the ground running.
+The Multi-Agent - Financial Market Agent Solution Accelerator provides a ready to go application to use as the base of the MVP, or as a reference, allowing you to hit the ground running.
 
 ### Technology Note
 This accelerator uses the AutoGen framework from Microsoft Research.  This is an open source project that is maintained by [Microsoft Research’s AI Frontiers Lab](https://www.microsoft.com/research/lab/ai-frontiers/). Please see this [blog post](https://devblogs.microsoft.com/autogen/microsofts-agentic-frameworks-autogen-and-semantic-kernel/) for the latest information on using the AutoGen framework in production solutions.
@@ -43,6 +38,11 @@ This application is an AI-driven orchestration system that manages a group of AI
 
 This system is intended for developing and deploying custom AI solutions for specific customers. This code has not been tested as an end-to-end, reliable production application- it is a foundation to help accelerate building out multi-agent systems. You are encouraged to add your own data and functions to the agents, and then you must apply your own performance and safety evaluation testing frameworks to this system before deploying it.
 
+Home Page
+\
+![image](./documentation/images/readme/macae-home.png)
+
+Task Plan and execution
 \
 ![image](./documentation/images/readme/macae-application.png)
 
@@ -51,18 +51,13 @@ This system is intended for developing and deploying custom AI solutions for spe
 ### Products used/licenses required
 
 -   Azure Container Application
-
 -   Azure OpenAI
-
 -   Azure Cosmos DB
-
 -   The user deploying the template must have permission to create
     resources and resource groups.
 
 ### Solution accelerator architecture
 ![image](./documentation/images/readme/macae-architecture.png)
-
-
 
 
 ### **How to install/deploy**
@@ -224,13 +219,12 @@ This solution is designed to be easily customizable. You can modify the front en
 - [Azure Cosmos DB documentation](https://learn.microsoft.com/en-us/azure/cosmos-db/)
   
 
-<h2><img src="./documentation/images/readme/customerTruth.png" width="64">
-</br>
-Customer truth
-</h2>
-Customer stories coming soon.
-
 <br/>
+
+### Notes
+
+Adapted from the repo at [Template](https://github.com/microsoft/Multi-Agent-Custom-Automation-Engine-Solution-Accelerator) and  [FinRobot](https://github.com/AI4Finance-Foundation/FinRobot)
+
 <br/>
 <br/>
 
