@@ -19,9 +19,9 @@ from reportlab.lib.units import inch
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY, TA_LEFT
 
-from fmputils import fmpUtils
-from yfutils import yfUtils
-from analyzer import ReportAnalysisUtils
+from helpers.fmputils import fmpUtils
+from helpers.yfutils import yfUtils
+from helpers.analyzer import ReportAnalysisUtils
 from typing import Annotated
 
 

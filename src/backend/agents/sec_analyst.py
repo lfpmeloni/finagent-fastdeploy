@@ -8,13 +8,13 @@ from typing_extensions import Annotated
 
 from agents.base_agent import BaseAgent
 from context.cosmos_memory import CosmosBufferedChatCompletionContext
-from fmputils import *
-from yfutils import *
+from helpers.fmputils import *
+from helpers.yfutils import *
 from datetime import date, timedelta, datetime
-from helpers import summarize, summarizeTopic
-from analyzer import *
-from reports import ReportLabUtils
-from charting import ReportChartUtils
+from helpers.summarizeutils import summarize, summarizeTopic
+from helpers.analyzer import *
+from helpers.reports import ReportLabUtils
+from helpers.charting import ReportChartUtils
 
 formatting_instructions = "Instructions: returning the output of this function call verbatim to the user in markdown."
 businessOverview = None

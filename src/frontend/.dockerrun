@@ -1,0 +1,13 @@
+-- Docker build
+docker build --tag ghcr.io/akshata29/finagent-frontend:latest .
+az acr build --registry astdnapublicacr --image finagents-frontend .
+
+-- Docker  Push
+echo <PAT_TOKEN> | docker login ghcr.io -u akshata13 --password-stdin
+docker push ghcr.io/akshata29/finagent-frontend:latest
+
+-- Docker Run
+docker run --env-file .dockerenv -p 3000:3000 --name finagent-frontend -it ghcr.io/akshata29/finagent-frontend:latest
+
+-- Deploy
+az functionapp config container set --image ghcr.io/akshata29/entaoai-python:latest --name <Name> --resource-group <RG>

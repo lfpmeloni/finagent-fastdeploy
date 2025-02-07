@@ -7,9 +7,9 @@ from autogen_core.tools import FunctionTool, Tool
 
 from agents.base_agent import BaseAgent
 from context.cosmos_memory import CosmosBufferedChatCompletionContext
-from fmputils import *
-from yfutils import *
-from analyzer import *
+from helpers.fmputils import *
+from helpers.yfutils import *
+from helpers.analyzer import *
 
 formatting_instructions = "Instructions: returning the output of this function call verbatim to the user in markdown."
 

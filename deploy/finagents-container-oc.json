@@ -82,10 +82,10 @@
   },
   "variables": {
     "appVersion": "latest",
-    "resgistryName": "biabcontainerreg",
+    "resgistryName": "astdnapublicacr",
     "dockerRegistryUrl": "[format('https://{0}.azurecr.io', variables('resgistryName'))]",
-    "backendDockerImageURL": "[format('{0}.azurecr.io/macaebackend:{1}', variables('resgistryName'), variables('appVersion'))]",
-    "frontendDockerImageURL": "[format('{0}.azurecr.io/macaefrontend:{1}', variables('resgistryName'), variables('appVersion'))]",
+    "backendDockerImageURL": "[format('{0}.azurecr.io/finagents-backend:{1}', variables('resgistryName'), variables('appVersion'))]",
+    "frontendDockerImageURL": "[format('{0}.azurecr.io/finagents-frontend:{1}', variables('resgistryName'), variables('appVersion'))]",
     "uniqueNameFormat": "[format('{0}-{{0}}-{1}', parameters('prefix'), uniqueString(resourceGroup().id, parameters('prefix')))]",
     "aoaiApiVersion": "2024-08-01-preview"
   },
@@ -366,6 +366,30 @@
                 {
                   "name": "FRONTEND_SITE_NAME",
                   "value": "[format('https://{0}.azurewebsites.net', format(variables('uniqueNameFormat'), 'frontend'))]"
+                },
+                {
+                  "name": "FMP_API_KEY",
+                  "value": "dummy"
+                },
+                {
+                  "name": "SEC_API_KEY",
+                  "value": "dummy"
+                },
+                {
+                  "name": "DCF_API_KEY",
+                  "value": "dummy"
+                },
+                {
+                  "name": "AZURE_TENANT_ID",
+                  "value": "autogen"
+                },
+                {
+                  "name": "AZURE_CLIENT_ID",
+                  "value": "autogen"
+                },
+                {
+                  "name": "AZURE_CLIENT_SECRET",
+                  "value": "autogen"
                 }
               ]
             }

@@ -3,9 +3,9 @@ import requests
 from sec_api import ExtractorApi, QueryApi, RenderApi
 from functools import wraps
 from typing import Annotated
-from fmputils import fmpUtils
-from dutils import decorate_all_methods
-from helpers import SavePathType
+from helpers.fmputils import fmpUtils
+from helpers.dutils import decorate_all_methods
+from helpers.summarizeutils import SavePathType
 
 CACHE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".cache")
 PDF_GENERATOR_API = "https://api.sec-api.io/filing-reader"

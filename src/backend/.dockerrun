@@ -1,0 +1,14 @@
+-- Docker build
+docker build --tag ghcr.io/akshata29/finagent-backend:latest .
+az acr build --registry astdnapublicacr --image finagents-backend .
+
+# az containerapp env create --name "astdnafinagent" --resource-group "astdnapublic" --location "eastus2"
+-- Docker  Push
+echo <PAT_TOKEN> | docker login ghcr.io -u akshata29 --password-stdin
+docker push ghcr.io/akshata29/finagent-backend:latest
+
+-- Docker Run
+docker run --env-file .dockerenv -p 8000:8000 --name finagent-backend -it ghcr.io/akshata29/finagent-backend:latest
+
+-- Deploy
+az containerapp create --name finagent-backend --resource-group astdnapublic --environment astdnafinagent --image astdnapublicacr.azurecr.io/finagents-backend --target-port 8000 --ingress external --registry-server astdnapublicacr.azurecr.io --user-assigned "astdnapubid" --registry-identity "/subscriptions/b14d5e08-eb70-45f2-ad78-ac5a9016fbf7/resourcegroups/astdnapublic/providers/Microsoft.ManagedIdentity/userAssignedIdentities/astdnapubid" --query properties.configuration.ingress.fqdn

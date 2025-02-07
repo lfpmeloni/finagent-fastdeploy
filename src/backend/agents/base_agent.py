@@ -12,6 +12,7 @@ from autogen_core.tools import Tool
 from context.cosmos_memory import CosmosBufferedChatCompletionContext
 from models.messages import (ActionRequest, ActionResponse,
                              AgentMessage, Step, StepStatus)
+from event_utils import track_event_if_configured
 
 class BaseAgent(RoutedAgent):
     def __init__(
@@ -93,6 +94,18 @@ class BaseAgent(RoutedAgent):
                     step_id=message.step_id,
                 )
             )
+
+            track_event_if_configured(
+                "Base agent - Added into the cosmos",
+                {
+                    "session_id": message.session_id,
+                    "user_id": self._user_id,
+                    "plan_id": message.plan_id,
+                    "content": f"{result}",
+                    "source": self._agent_name,
+                    "step_id": message.step_id,
+                },
+            )
         except Exception as e:
             print(f"Error during LLM call: {e}")
             return
@@ -102,6 +115,20 @@ class BaseAgent(RoutedAgent):
         step.agent_reply = result
         await self._model_context.update_step(step)
 
+        track_event_if_configured(
+            "Base agent - Updated step and updated into the cosmos",
+            {
+                "status": StepStatus.completed,
+                "session_id": message.session_id,
+                "agent_reply": f"{result}",
+                "user_id": self._user_id,
+                "plan_id": message.plan_id,
+                "content": f"{result}",
+                "source": self._agent_name,
+                "step_id": message.step_id,
+            },
+        )
+        
         action_response = ActionResponse(
             step_id=step.id,
             plan_id=step.plan_id,

@@ -31,7 +31,6 @@ def GetBoolConfig(name):
     return os.getenv(name) and os.getenv(name).lower() in ["true", "1"]
 
 
-
 class Config:
     AZURE_TENANT_ID = GetOptionalConfig("AZURE_TENANT_ID")
     AZURE_CLIENT_ID = GetOptionalConfig("AZURE_CLIENT_ID")

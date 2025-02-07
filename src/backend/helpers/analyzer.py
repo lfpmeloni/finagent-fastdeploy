@@ -2,9 +2,9 @@ import os
 from textwrap import dedent
 from typing import Annotated, List
 from datetime import timedelta, datetime
-from fmputils import fmpUtils
-from yfutils import yfUtils
-from secutils import SECUtils
+from helpers.fmputils import fmpUtils
+from helpers.yfutils import yfUtils
+from helpers.secutils import SECUtils
 
 def combine_prompt(instruction, resource, table_str=None):
     if table_str:

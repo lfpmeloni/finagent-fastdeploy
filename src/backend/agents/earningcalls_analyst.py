@@ -8,11 +8,11 @@ from typing_extensions import Annotated
 
 from agents.base_agent import BaseAgent
 from context.cosmos_memory import CosmosBufferedChatCompletionContext
-from fmputils import *
-from yfutils import *
+from helpers.fmputils import *
+from helpers.yfutils import *
 from datetime import date, timedelta, datetime
-from helpers import summarize, summarizeTopic
-from dcfutils import DcfUtils
+from helpers.summarizeutils import summarize, summarizeTopic
+from helpers.dcfutils import DcfUtils
 
 formatting_instructions = "Instructions: returning the output of this function call verbatim to the user in markdown."
 latestEarnings = None

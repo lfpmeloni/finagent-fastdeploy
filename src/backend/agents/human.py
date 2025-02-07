@@ -15,6 +15,7 @@ from models.messages import (
     AgentMessage,
     Step,
 )
+from event_utils import track_event_if_configured
 
 
 @default_subscription
@@ -59,6 +60,18 @@ class HumanAgent(RoutedAgent):
             )
         )
         logging.info(f"HumanAgent received feedback for step: {step}")
+
+        track_event_if_configured(
+            f"Human Agent - Received feedback for step: {step} and added into the cosmos",
+            {
+                "session_id": message.session_id,
+                "user_id": self.user_id,
+                "plan_id": step.plan_id,
+                "content": f"Received feedback for step: {step.action}",
+                "source": "HumanAgent",
+                "step_id": message.step_id,
+            },
+        )
 
         # Notify the GroupChatManager that the step has been completed
         await self._memory.add_item(

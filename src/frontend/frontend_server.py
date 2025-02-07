@@ -21,7 +21,7 @@ import html
 
 @app.get("/config.js", response_class=PlainTextResponse)
 def get_config():
-    backend_url = html.escape(os.getenv("BACKEND_API_URL", "http://localhost:8000"))
+    backend_url = html.escape(os.getenv("BACKEND_API_URL", "http://localhost:8001"))
     return f'const BACKEND_API_URL = "{backend_url}";'
 
 

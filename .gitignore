@@ -459,3 +459,4 @@ __pycache__/
 !autogen_core-0.3.dev0-py3-none-any.whl
 src/backend/.cache/*
 src/backend/reports/*
+src/backend/.dockerenv

@@ -7,7 +7,7 @@ from typing import Annotated, List, Tuple
 from pandas import DateOffset
 from datetime import datetime, timedelta
 
-from yfutils import yfUtils
+from helpers.yfutils import yfUtils
 
 class MplFinanceUtils:
 

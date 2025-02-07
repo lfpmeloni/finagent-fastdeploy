@@ -7,7 +7,7 @@ param azureOpenAILocation string = 'EastUS' //Fixed for model availability
 
 
 @description('A prefix to add to the start of all resource names. Note: A "unique" suffix will also be added')
-param prefix string = 'macae'
+param prefix string = 'finagt'
 
 @description('Tags to apply to all deployed resources')
 param tags object = {}
@@ -35,12 +35,12 @@ param resourceSize {
 
 
 var appVersion = 'latest'
-var resgistryName = 'biabcontainerreg'
+var resgistryName = 'astdnapublicacr'
 var dockerRegistryUrl = 'https://${resgistryName}.azurecr.io'
 
 @description('URL for frontend docker image')
-var backendDockerImageURL = '${resgistryName}.azurecr.io/macaebackend:${appVersion}'
-var frontendDockerImageURL = '${resgistryName}.azurecr.io/macaefrontend:${appVersion}'
+var backendDockerImageURL = '${resgistryName}.azurecr.io/finagents-backend:${appVersion}'
+var frontendDockerImageURL = '${resgistryName}.azurecr.io/finagents-frontend:${appVersion}'
 
 var uniqueNameFormat = '${prefix}-{0}-${uniqueString(resourceGroup().id, prefix)}'
 var aoaiApiVersion = '2024-08-01-preview'
@@ -278,6 +278,30 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
             {
               name: 'FRONTEND_SITE_NAME'
               value: 'https://${format(uniqueNameFormat, 'frontend')}.azurewebsites.net'
+            }
+            {
+              name: 'FMP_API_KEY'
+              value: 'dummy'
+            }
+            {
+              name: 'SEC_API_KEY'
+              value: 'dummy'
+            }
+            {
+              name: 'DCF_API_KEY'
+              value: 'dummy'
+            }
+            {
+              name: 'AZURE_TENANT_ID'
+              value: 'autogen'
+            }
+            {
+              name: 'AZURE_CLIENT_ID'
+              value: 'autogen'
+            }
+            {
+              name: 'AZURE_CLIENT_SECRET'
+              value: 'autogen'
             }
           ]
         }
