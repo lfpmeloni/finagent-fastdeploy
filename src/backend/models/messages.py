@@ -26,6 +26,8 @@ class BAgentType(str, Enum):
     company_analyst_agent = "CompanyAnalystAgent"
     earning_calls_analyst_agent = "EarningCallsAnalystAgent"
     sec_analyst_agent = "SecAnalystAgent"
+    technical_analysis_agent = "TechnicalAnalysisAgent" 
+    fundamental_analysis_agent = "FundamentalAnalysisAgent"
     forecaster_agent = "ForecasterAgent"
     group_chat_manager = "GroupChatManager"
     planner_agent = "PlannerAgent"

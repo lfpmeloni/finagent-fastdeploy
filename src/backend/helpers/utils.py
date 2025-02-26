@@ -19,6 +19,8 @@ from agents.company_analyst import CompanyAnalystAgent, get_company_analyst_tool
 from agents.earningcalls_analyst import EarningCallsAnalystAgent, get_earning_calls_analyst_tools
 from agents.sec_analyst import SecAnalystAgent, get_sec_analyst_tools
 from agents.forecaster import ForecasterAgent, get_forecaster_tools
+from agents.technical_analysis import TechnicalAnalysisAgent, get_enhanced_technical_analysis_tools
+from agents.fundamental_analysis import FundamentalAnalysisAgent, get_fundamental_analysis_tools
 
 # from agents.misc import MiscAgent
 from config import Config
@@ -51,6 +53,8 @@ company_analyst_tools = get_company_analyst_tools()
 earning_calls_analyst_tools = get_earning_calls_analyst_tools()
 sec_analyst_tools = get_sec_analyst_tools()
 forecaster_tools = get_forecaster_tools()
+technical_analysis_tools = get_enhanced_technical_analysis_tools()
+fundamental_analysis_tools = get_fundamental_analysis_tools()
 
 # Initialize the Azure OpenAI model client
 aoai_model_client = Config.GetAzureOpenAIChatCompletionClient(
@@ -98,6 +102,10 @@ async def initialize_runtime_and_context(
     earning_calls_analyst_tool_agent_id = AgentId("earning_calls_analyst_tool_agent", session_id)
     sec_analyst_agent_id = AgentId("sec_analyst_agent", session_id)
     sec_analyst_tool_agent_id = AgentId("sec_analyst_tool_agent", session_id)
+    technical_analysis_agent_id = AgentId("technical_analysis_agent", session_id)
+    technical_analysis_tool_agent_id = AgentId("technical_analysis_tool_agent", session_id)
+    fundamental_analysis_agent_id = AgentId("fundamental_analysis_agent", session_id)
+    fundamental_analysis_tool_agent_id = AgentId("fundamental_analysis_tool_agent", session_id)
     forecaster_agent_id = AgentId("forecaster_agent", session_id)
     forecaster_tool_agent_id = AgentId("forecaster_tool_agent", session_id)
     group_chat_manager_id = AgentId("group_chat_manager", session_id)  
@@ -131,6 +139,16 @@ async def initialize_runtime_and_context(
     )
     await ToolAgent.register(
         runtime,
+        "technical_analysis_tool_agent",
+        lambda: ToolAgent("Technical analysis tool execution agent", technical_analysis_tools),
+    )
+    await ToolAgent.register(
+        runtime,
+        "fundamental_analysis_tool_agent",
+        lambda: ToolAgent("Fundamental analysis tool execution agent", fundamental_analysis_tools),
+    )
+    await ToolAgent.register(
+        runtime,
         "forecaster_tool_agent",
         lambda: ToolAgent("Forecaster tool execution agent", forecaster_tools),
     )
@@ -156,6 +174,8 @@ async def initialize_runtime_and_context(
                     company_analyst_agent_id,
                     earning_calls_analyst_agent_id,
                     sec_analyst_agent_id,
+                    technical_analysis_agent_id,
+                    fundamental_analysis_agent_id,
                     forecaster_agent_id,  
                 ]
             ],
@@ -198,6 +218,30 @@ async def initialize_runtime_and_context(
             sec_analyst_tool_agent_id,
         ),
     )
+    await TechnicalAnalysisAgent.register(
+        runtime,
+        technical_analysis_agent_id.type,
+        lambda: TechnicalAnalysisAgent(
+            aoai_model_client,
+            session_id,
+            user_id,
+            cosmos_memory,
+            technical_analysis_tools,
+            technical_analysis_tool_agent_id,
+        ),
+    )
+    await FundamentalAnalysisAgent.register(
+        runtime,
+        fundamental_analysis_agent_id.type,
+        lambda: FundamentalAnalysisAgent(
+            aoai_model_client,
+            session_id,
+            user_id,
+            cosmos_memory,
+            fundamental_analysis_tools,
+            fundamental_analysis_tool_agent_id,
+        ),
+    )
     await EarningCallsAnalystAgent.register(
         runtime,
         earning_calls_analyst_agent_id.type,
@@ -235,6 +279,8 @@ async def initialize_runtime_and_context(
         BAgentType.company_analyst_agent: company_analyst_agent_id,
         BAgentType.earning_calls_analyst_agent: earning_calls_analyst_agent_id,
         BAgentType.sec_analyst_agent: sec_analyst_agent_id,
+        BAgentType.technical_analysis_agent: technical_analysis_agent_id,
+        BAgentType.fundamental_analysis_agent: fundamental_analysis_agent_id,
         BAgentType.forecaster_agent: forecaster_agent_id,
     }
     await GroupChatManager.register(
@@ -258,6 +304,8 @@ def retrieve_all_agent_tools() -> List[Dict[str, Any]]:
     company_analyst_tools: List[Tool] = get_company_analyst_tools()
     earning_calls_analyst_tools: List[Tool] = get_earning_calls_analyst_tools()
     sec_analyst_tools: List[Tool] = get_sec_analyst_tools()
+    technical_analysis_tools: List[Tool] = get_enhanced_technical_analysis_tools()
+    fundamental_analysis_tools: List[Tool] = get_fundamental_analysis_tools()
     forecaster_tools: List[Tool] = get_forecaster_tools()
 
     functions = []
@@ -288,6 +336,26 @@ def retrieve_all_agent_tools() -> List[Dict[str, Any]]:
         functions.append(
             {
                 "agent": "SecAnalystAgent",
+                "function": tool.name,
+                "description": tool.description,
+                "arguments": str(tool.schema["parameters"]["properties"]),
+            }
+        )
+    # Add TechnicalAnalysisAgent functions
+    for tool in technical_analysis_tools:
+        functions.append(
+            {
+                "agent": "TechnicalAnalysisAgent",
+                "function": tool.name,
+                "description": tool.description,
+                "arguments": str(tool.schema["parameters"]["properties"]),
+            }
+        )
+    # Add FundamentalAnalysisAgent functions
+    for tool in fundamental_analysis_tools:
+        functions.append(
+            {
+                "agent": "FundamentalAnalysisAgent",
                 "function": tool.name,
                 "description": tool.description,
                 "arguments": str(tool.schema["parameters"]["properties"]),

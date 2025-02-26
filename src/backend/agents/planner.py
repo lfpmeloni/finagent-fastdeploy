@@ -216,7 +216,7 @@ class PlannerAgent(RoutedAgent):
 
         Limit the plan to 10 steps or less.
 
-        Choose from HumanAgent, GenericAgent, EarningCallsAnalystAgent, CompanyAnalystAgent, SecAnalystAgent ONLY for planning your steps.
+        Choose from HumanAgent, GenericAgent, EarningCallsAnalystAgent, CompanyAnalystAgent, SecAnalystAgent, TechnicalAnalysisAgent ONLY for planning your steps.
 
         """
         return instruction_template
@@ -242,8 +242,8 @@ class PlannerAgent(RoutedAgent):
         try:
             # Get the LLM response
             result = await self._model_client.create(
-                messages,
-                extra_create_args={"response_format": StructuredOutputPlan},
+               messages,
+               extra_create_args={"response_format": StructuredOutputPlan},
             )
             content = result.content
 

@@ -5,6 +5,7 @@ autogen-ext[azure]
 autogen-ext[openai]
 azure-cosmos
 azure-identity
+azure-storage-blob
 python-dotenv
 python-multipart
 opentelemetry-api
@@ -25,3 +26,4 @@ sec_api
 mplfinance
 azure-monitor-opentelemetry
 azure-monitor-events-extension
+ta

@@ -355,3 +355,24 @@ class fmpUtils:
 
         return all_data
 
+    def get_ratings(
+        ticker_symbol: Annotated[str, "ticker symbol"],
+    ) -> dict:
+        """Get the stable ratings for a given stock"""
+        # Base URL setup for FMP API
+        base_url = "https://financialmodelingprep.com/stable"
+        ratingsUrl = f"{base_url}/ratings-historical?symbol={ticker_symbol}&apikey={fmp_api_key}"
+        # Create DataFrame
+        ratings_data = requests.get(ratingsUrl).json()
+        return ratings_data
+    
+    def get_financial_scores(
+        ticker_symbol: Annotated[str, "ticker symbol"],
+    ) -> dict:
+        """Get the stable ratings for a given stock"""
+        # Base URL setup for FMP API
+        base_url = "https://financialmodelingprep.com/stable"
+        scoreUrl = f"{base_url}/financial-scores?symbol={ticker_symbol}&apikey={fmp_api_key}"
+        # Create DataFrame
+        score_data = requests.get(scoreUrl).json()
+        return score_data

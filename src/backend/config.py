@@ -28,7 +28,11 @@ def GetOptionalConfig(name, default=""):
 
 def GetBoolConfig(name):
     #return name in os.environ and os.environ[name].lower() in ["true", "1"]
-    return os.getenv(name) and os.getenv(name).lower() in ["true", "1"]
+    #return os.getenv(name) and os.getenv(name).lower() in ["true", "1"]
+    if os.getenv(name):
+        if os.getenv(name).lower() in ["true", "1"]:
+            return True
+    return False
 
 
 class Config:
@@ -45,6 +49,10 @@ class Config:
     AZURE_OPENAI_ENDPOINT = GetRequiredConfig("AZURE_OPENAI_ENDPOINT")
     AZURE_OPENAI_API_KEY = GetOptionalConfig("AZURE_OPENAI_KEY")
 
+    AZURE_BLOB_STORAGE_NAME = GetRequiredConfig("AZURE_BLOB_STORAGE_NAME")
+    AZURE_BLOB_CONTAINER_NAME = GetRequiredConfig("AZURE_BLOB_CONTAINER_NAME")
+
+    APP_IN_CONTAINER = GetBoolConfig("APP_IN_CONTAINER")
     FRONTEND_SITE_NAME = GetOptionalConfig("FRONTEND_SITE_NAME", "http://127.0.0.1:3000")
     
 
@@ -100,6 +108,7 @@ class Config:
                     "https://cognitiveservices.azure.com/.default"
                 ),
                 model="gpt-4o",
+                #model="o1-mini",
                 model_capabilities=model_capabilities,
                 temperature=0,
             )
@@ -111,6 +120,7 @@ class Config:
                 azure_endpoint=Config.AZURE_OPENAI_ENDPOINT,
                 api_key=Config.AZURE_OPENAI_API_KEY,
                 model="gpt-4o",
+                #model="o1-mini",
                 model_capabilities=model_capabilities,
                 temperature=0,
             )

@@ -15,6 +15,10 @@ from helpers.summarizeutils import summarize, summarizeTopic
 from helpers.analyzer import *
 from helpers.reports import ReportLabUtils
 from helpers.charting import ReportChartUtils
+from azure.identity import ClientSecretCredential, DefaultAzureCredential
+from helpers.azureblob import azureBlobApi
+import uuid
+from config import Config
 
 formatting_instructions = "Instructions: returning the output of this function call verbatim to the user in markdown."
 businessOverview = None
@@ -163,14 +167,35 @@ async def build_annual_report(ticker_symbol:str, year:str) -> str:
         filingDate = datetime.strptime(filingDate, "%Y-%m-%d").strftime("%Y-%m-%d")
 
 
-    ReportChartUtils.get_share_performance(ticker_symbol, filingDate, "reports\\")
-    ReportChartUtils.get_pe_eps_performance(ticker_symbol, filingDate, 4, "reports\\")
-    reportOut = ReportLabUtils.build_annual_report(ticker_symbol, "reports\\", incomeSummarization,
-                            marketPosition, businessOverview, riskAssessment, None, "reports\\stock_performance.png", "reports\\pe_performance.png", filingDate)
+    if Config.APP_IN_CONTAINER:
+        reportDir = "/app/backend/reports/"
+    else:
+        reportDir = "reports\\"
+    
+    print("****************")
+    print("reportDir: ", reportDir)
+    print("****************")
+
+    reportFile = reportDir + "{}_Equity_Research_report.pdf".format(ticker_symbol)
+    reportFileStock = reportDir + "stock_performance.png"
+    reportFilePE = reportDir + "pe_performance.png"
+    blobFileName = "{}_{}Equity_Research_report.pdf".format(str(uuid.uuid4()), ticker_symbol)
+
+    ReportChartUtils.get_share_performance(ticker_symbol, filingDate, reportDir)
+    ReportChartUtils.get_pe_eps_performance(ticker_symbol, filingDate, 4, reportDir)
+    reportOut = ReportLabUtils.build_annual_report(ticker_symbol, reportDir, incomeSummarization,
+                            marketPosition, businessOverview, riskAssessment, None, reportFileStock, reportFilePE, filingDate)
+    
+    try:
+        blobUrl = azureBlobApi.copyReport(reportFile, blobFileName)
+    except Exception as e:
+        reportFile = "/app/backend/reports/" + "{}_Equity_Research_report.pdf".format(ticker_symbol)
+        blobUrl = azureBlobApi.copyReport(reportFile, blobFileName)
+    
     return (
         f"#####Build Annual Report\n"
         f"**Company Name:** {ticker_symbol}\n"
-        f"**Report Saved at :** reports\\{ticker_symbol}_Equity_Research_report.pdf\n"
+        f"**Report Saved at :** {blobUrl}\n"
         f"{formatting_instructions}"
     )
 

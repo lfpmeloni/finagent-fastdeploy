@@ -147,3 +147,30 @@ class yfUtils:
         majority_voting_result = row_0[row_0 == max_votes].index.tolist()
 
         return majority_voting_result[0], max_votes
+
+    def get_fundamentals(symbol: Annotated[str, "ticker symbol"]) -> DataFrame:
+        """Fetches and returns the latest fundamentals data as a DataFrame."""
+        ticker = symbol
+        info = ticker.info  # yfinance's fundamental data
+        # Some commonly used fields: 'forwardPE', 'trailingPE', 'priceToBook', 'beta', 'profitMargins', etc.
+        # Not all fields are guaranteed to exist for every ticker.
+        fundamentals = {
+            "forwardPE": info.get("forwardPE", None),
+            "trailingPE": info.get("trailingPE", None),
+            "priceToBook": info.get("priceToBook", None),
+            "beta": info.get("beta", None),
+            "bookValue": info.get("bookValue", None),
+            "trailingEps": info.get("trailingEps", None),
+            "forwardEps": info.get("forwardEps", None),
+            "enterpriseToRevenue": info.get("enterpriseToRevenue", None),
+            "enterpriseToEbitda": info.get("enterpriseToEbitda", None),
+            "debtToEquity": info.get("debtToEquity", None),
+            "returnOnEquity": info.get("returnOnEquity", None),
+            "returnOnAssets": info.get("returnOnAssets", None),
+            "currentRatio": info.get("currentRatio", None),
+            "quickRatio": info.get("quickRatio", None),
+            "trailingPegRatio": info.get("trailingPegRatio", None),
+        }
+
+        fundamentals_df = DataFrame([fundamentals])
+        return fundamentals_df

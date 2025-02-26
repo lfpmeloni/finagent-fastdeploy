@@ -2,6 +2,8 @@
 docker build --tag ghcr.io/akshata29/finagent-backend:latest .
 az acr build --registry astdnapublicacr --image finagents-backend .
 
+az containerapp revision deactivate --revision finagent-backend--latest --resource-group astdnapublic
+
 # az containerapp env create --name "astdnafinagent" --resource-group "astdnapublic" --location "eastus2"
 -- Docker  Push
 echo <PAT_TOKEN> | docker login ghcr.io -u akshata29 --password-stdin
