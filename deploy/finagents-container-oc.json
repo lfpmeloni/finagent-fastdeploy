@@ -82,7 +82,7 @@
   },
   "variables": {
     "appVersion": "latest",
-    "resgistryName": "astdnapublicacr",
+    "resgistryName": "myfinagentacr",
     "dockerRegistryUrl": "[format('https://{0}.azurecr.io', variables('resgistryName'))]",
     "backendDockerImageURL": "[format('{0}.azurecr.io/finagents-backend:{1}', variables('resgistryName'), variables('appVersion'))]",
     "frontendDockerImageURL": "[format('{0}.azurecr.io/finagents-frontend:{1}', variables('resgistryName'), variables('appVersion'))]",

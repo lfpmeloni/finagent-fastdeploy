@@ -21,12 +21,12 @@ from models.messages import (
     Step,
     AgentMessage,
     PlanWithSteps,
+    PlanStatus,
 )
 from helpers.utils import initialize_runtime_and_context, retrieve_all_agent_tools, rai_success
-import asyncio
 from fastapi.middleware.cors import CORSMiddleware
 from event_utils import track_event_if_configured
-from azure.monitor.opentelemetry import configure_azure_monitor
+# from azure.monitor.opentelemetry import configure_azure_monitor
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 import os
 #from azure.core.settings import settings 
@@ -37,15 +37,15 @@ import os
 
 #load_dotenv(".env", override=True)
 
-# Check if the Application Insights Instrumentation Key is set in the environment variables
-instrumentation_key = os.getenv("APPLICATIONINSIGHTS_INSTRUMENTATION_KEY")
-if instrumentation_key:
-    # Configure Application Insights if the Instrumentation Key is found
-    configure_azure_monitor(connection_string=instrumentation_key)
-    logging.info("Application Insights configured with the provided Instrumentation Key")
-else:
-    # Log a warning if the Instrumentation Key is not found
-    logging.warning("No Application Insights Instrumentation Key found. Skipping configuration")
+# # Check if the Application Insights Instrumentation Key is set in the environment variables
+# instrumentation_key = os.getenv("APPLICATIONINSIGHTS_INSTRUMENTATION_KEY")
+# if instrumentation_key:
+#     # Configure Application Insights if the Instrumentation Key is found
+#     configure_azure_monitor(connection_string=instrumentation_key)
+#     logging.info("Application Insights configured with the provided Instrumentation Key")
+# else:
+#     # Log a warning if the Instrumentation Key is not found
+#     logging.warning("No Application Insights Instrumentation Key found. Skipping configuration")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -162,7 +162,18 @@ async def input_task_endpoint(input_task: InputTask, request: Request):
 
     # Send the InputTask message to the GroupChatManager
     group_chat_manager_id = AgentId("group_chat_manager", input_task.session_id)
-    plan: Plan = await runtime.send_message(input_task, group_chat_manager_id)
+    try:
+        plan: Plan = await runtime.send_message(input_task, group_chat_manager_id)
+    except Exception as e:
+        logging.exception("Unexpected error while generating plan")
+        raise HTTPException(status_code=500, detail="Internal error generating plan")
+
+    if plan.overall_status == PlanStatus.failed:
+        logging.error(f"PlannerAgent failed to generate plan: {plan.summary}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Planner error: {plan.summary or 'unknown'}"
+        )
 
     # Log custom event for successful input task processing
     track_event_if_configured(

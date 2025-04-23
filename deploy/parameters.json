@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "prefix": { "value": "finagent" },
+      "location": { "value": "westeurope" },
+      "azureOpenAILocation": { "value": "eastus" },
+      "resourceSize": {
+        "value": {
+          "gpt4oCapacity": 50,
+          "cosmosThroughput": 1000,
+          "containerAppSize": {
+            "cpu": "2.0",
+            "memory": "4.0Gi",
+            "minReplicas": 1,
+            "maxReplicas": 1
+          }
+        }
+      },
+      "tags": { "value": {} }
+    }
+  }
+  
